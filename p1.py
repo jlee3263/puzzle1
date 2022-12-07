@@ -43,7 +43,6 @@ class Game():
         if future_score == future_grid_score_label:
             print("    workable")
             return True
-        print("    not workable")
         return False
 
 
@@ -81,19 +80,19 @@ class Game():
         # update game state
         if direction == FORWARD: # going up 
             self.row -= 1
-            print(f"Moving forward/up, new (row,col) is ({self.row}, {self.col})")
+            print(f"Moved forward/up, new (row,col) is ({self.row}, {self.col})")
 
         if direction == BACKWARD:
             self.row += 1
-            print(f"Moving backward/down, new (row,col) is ({self.row}, {self.col})")
+            print(f"Moved backward/down, new (row,col) is ({self.row}, {self.col})")
 
         if direction == LEFT:
             self.col -= 1
-            print(f"Moving left, new (row,col) is ({self.row}, {self.col})")
+            print(f"Moved left, new (row,col) is ({self.row}, {self.col})")
 
         if direction == RIGHT:
             self.col += 1
-            print(f"Moving right, new (row,col) is ({self.row}, {self.col})")
+            print(f"Moved right, new (row,col) is ({self.row}, {self.col})")
     
 
     def update_game_state(self, direction):
@@ -115,8 +114,9 @@ class Game():
     def update_game_score(self):
         print("---- Updating score")
         print(f"Prev score: {self.score}")
-        self.score += self.move * self.dice.current_face_up_value
-        print(f"New score: {self.score}")
+        num_points_added = self.move * self.dice.current_face_up_value
+        self.score += num_points_added
+        print(f"amt added: {num_points_added}, New score: {self.score}")
 
     def is_solved(self):
         if self.row == 0 and self.col == 5:
@@ -164,7 +164,7 @@ class Game():
             future_col = self.col + 1
 
 
-        print(f"------- test direction: {direction}------------")
+        print(f"------- test direction: {direction} ------------")
         future_face_up_value = dice_info["value_facing_up"]
         future_face_up_index = dice_info["face_up_index"]       
 
@@ -173,8 +173,9 @@ class Game():
             undo_face_change = True
             suitable_value = self.find_one_suitable_value(future_row, future_col)
             # now we find a suitable value we will enforce it 
-            self.dice.fill_in_one_value_for_one_face(suitable_value, future_face_up_index)
-            return (self.is_comply(future_row, future_col, suitable_value), undo_face_change)  
+            if suitable_value:
+                self.dice.fill_in_one_value_for_one_face(suitable_value, future_face_up_index)
+                return True, undo_face_change
 
         return self.is_comply(future_row, future_col, future_face_up_value), undo_face_change
  
@@ -203,9 +204,9 @@ class Game():
         current_move = self.move
         # the condition to meet is future_total_score = current_score + ((self.move + 1) * face_up_value)
         diff = future_label_score - current_score
-
         # for now i only accept integers 
         suitable_value = diff / (self.move + 1)
+        print(f"    diff is {diff}, divisor is {self.move + 1}, value computed is {suitable_value}")
         if suitable_value.is_integer():
             return suitable_value   
         
@@ -243,7 +244,7 @@ class Game():
         
         self.dice.print_state()
         self.print_game_state()
-        input("hit enter to continue")
+        input(" ========================= hit enter to continue ======================================")
         if self.is_solved():
             exit("YESSSSSSSSSSS")
 
@@ -287,7 +288,7 @@ class Dice():
     def print_state(self):
         print(f"My faces are: {self.faces}")
         print(f"My current face up value is {self.current_face_up_value}")
-
+        print(f"My current face up index is {self.current_face_up_index}")
 
     def fill_in_one_value_for_one_face(self, new_value, index):
         # assume index = [0,6]
