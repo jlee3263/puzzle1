@@ -1,4 +1,6 @@
+from fractions import Fraction
 import random
+
 
 GRID = [
     [57, 33, 132, 268, 492, 732],
@@ -211,14 +213,12 @@ class Game():
         # the condition to meet is future_total_score = current_score + ((self.move + 1) * face_up_value)
         diff = future_label_score - current_score
         # for now i only accept integers
-        suitable_value = diff / (self.move + 1)
+        suitable_value = Fraction(diff / (self.move + 1))
         print(f"    diff is {diff}, divisor is {self.move + 1}, value computed is {suitable_value}")
         if use_integer and suitable_value.is_integer():
             return suitable_value
         elif not use_integer:
-            num_decimal_points = len(str(suitable_value).split(".")[1])
-            if num_decimal_points < 10:
-                return suitable_value  
+            return suitable_value  
         print(f"    {suitable_value} not suitable")
         return False
 
